@@ -204,6 +204,22 @@
     </div>
 
     <script>
+        // Redirección a login para GitHub Pages y entorno local
+        (function redirectToLogin(){
+            // Detectar si estamos en GitHub Pages (project pages)
+            const BASE_PATH = location.hostname.endsWith('github.io') ? `/${location.pathname.split('/')[1]}` : '';
+            // Si el sitio está sirviendo esta landing, redirigimos al login
+            // Evitar bucles si ya estamos en login.html
+            const isLogin = location.pathname.endsWith('/login.html');
+            if (!isLogin) {
+                // Esperar un tick para no interferir con servidores que ya sirven / al login
+                setTimeout(()=>{
+                    try {
+                        location.replace(`${BASE_PATH}/login.html`);
+                    } catch {}
+                }, 0);
+            }
+        })();
         class SurveyApp {
             constructor() {
                 this.questions = [];
