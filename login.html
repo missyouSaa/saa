@@ -284,6 +284,16 @@
         });
 
         // Manejar envío del formulario
+        // Utilidades para GitHub Pages y API externo
+        const BASE_PATH = location.hostname.endsWith('github.io') ? `/${location.pathname.split('/')[1]}` : '';
+        const getApiBase = () => {
+            const qp = new URLSearchParams(location.search).get('api');
+            if (qp) {
+                try { localStorage.setItem('apiBase', qp); } catch {}
+            }
+            return (window.API_BASE || localStorage.getItem('apiBase') || '');
+        };
+
         document.getElementById('loginForm').addEventListener('submit', async function(e) {
             e.preventDefault();
             
@@ -300,7 +310,8 @@
             document.getElementById('successMessage').style.display = 'none';
 
             try {
-                const response = await fetch('/api/auth/login', {
+                const API_BASE = getApiBase();
+                const response = await fetch(`${API_BASE}/api/auth/login`, {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
@@ -323,10 +334,10 @@
                     // Redirigir según el rol
                     setTimeout(() => {
                         if (selectedRole === 'student') {
-                            // Redirigir al dashboard de estudiante
-                            window.location.href = '/student/dashboard';
+                            // Redirigir al dashboard de estudiante (compatible con GitHub Pages)
+                            window.location.href = `${BASE_PATH}/student-dashboard.html`;
                         } else {
-                            window.location.href = '/teacher/dashboard';
+                            window.location.href = `${BASE_PATH}/teacher-dashboard.html`;
                         }
                     }, 1200);
                 } else {
@@ -446,7 +457,8 @@
                         err.style.display = 'block';
                         return;
                     }
-                    const response = await fetch('/api/auth/register', {
+                    const API_BASE = getApiBase();
+                    const response = await fetch(`${API_BASE}/api/auth/register`, {
                         method: 'POST',
                         headers: { 'Content-Type': 'application/json' },
                         body: JSON.stringify({ username, password, role: regRole, firstName, lastName })
@@ -457,7 +469,7 @@
                         msg.style.display = 'block';
                         // Autologin inmediato tras registro
                         try {
-                            const loginRes = await fetch('/api/auth/login', {
+                            const loginRes = await fetch(`${API_BASE}/api/auth/login`, {
                                 method: 'POST',
                                 headers: { 'Content-Type': 'application/json' },
                                 body: JSON.stringify({ username, password, role: regRole })
@@ -471,9 +483,9 @@
                                 // Redirigir según rol
                                 setTimeout(()=>{
                                     if (regRole === 'student') {
-                                        window.location.href = '/student/dashboard';
+                                        window.location.href = `${BASE_PATH}/student-dashboard.html`;
                                     } else {
-                                        window.location.href = '/teacher/dashboard';
+                                        window.location.href = `${BASE_PATH}/teacher-dashboard.html`;
                                     }
                                 }, 500);
                             } else {
