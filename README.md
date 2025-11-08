@@ -1,107 +1,97 @@
-# Survey App
+# Saa App
 
-Aplicación de encuestas tecnológicas construida con React, TypeScript, Node.js y SQLite.
+Aplicación con cliente estático (HTML) y servidor Node.js con endpoints de autenticación y dashboards.
 
-## 🚀 Estado Actual
+## 🚀 Ejecutar desde GitHub
 
-✅ **Servidor Backend**: Funcionando en http://localhost:3000  
-✅ **Base de Datos**: SQLite inicializada con datos de ejemplo  
-✅ **API REST**: Endpoints disponibles  
-⚠️ **Cliente Frontend**: Requiere construcción manual
+Hay dos formas principales:
 
-## 📋 Requisitos Previos
+- GitHub Pages (solo cliente): `client/` se publica como sitio estático.
+- GitHub Codespaces o clon local (cliente + servidor): ejecuta el backend y el cliente juntos.
 
-- Node.js instalado
-- npm instalado
+### GitHub Pages (cliente)
 
-## 🔧 Instalación
+Ya está configurado el workflow en `.github/workflows/deploy-pages.yml` para publicar `client/`.
 
-1. **Instalar dependencias**:
-   ```bash
-   npm install
-   ```
+Pasos:
+- Entra a `Settings → Pages` y selecciona "GitHub Actions" como fuente.
+- Haz push a `main` o ejecuta el workflow manualmente.
+- La URL será `https://<tu-usuario>.github.io/<repo>/` (por ejemplo: `https://missyouSaa.github.io/saa/`).
 
-2. **Inicializar base de datos** (ya completado):
-   - ✅ Archivo `dev.db` creado
-   - ✅ Tablas creadas: `survey_questions`, `users`, `survey_responses`
-   - ✅ Datos de ejemplo insertados
+Importante:
+- El login/registro requieren un backend accesible. En GitHub Pages puedes indicar el backend con:
+  - Parámetro de URL: añade `?api=https://tu-backend` a la URL.
+  - O guarda base API: en consola del navegador ejecuta `localStorage.setItem('apiBase','https://tu-backend')`.
 
-## 🚀 Uso
+### Desplegar backend (Render/Railway)
 
-### Opción 1: Iniciar todo con un comando
+El backend usa `basic-server.cjs` y respeta `PORT` del entorno.
+
+Render (ejemplo):
+- Crea un nuevo servicio "Web Service" conectado a este repo.
+- Start Command: `node basic-server.cjs`.
+- Asegúrate de que el servicio use la variable `PORT` (Render la inyecta).
+- Obtén la URL pública (p.ej. `https://saa-backend.onrender.com`).
+- Configura el cliente (GitHub Pages) con `?api=https://saa-backend.onrender.com`.
+
+Railway (alternativa):
+- Crea proyecto y despliega desde GitHub.
+- Start Command: `node basic-server.cjs`.
+- Usa el puerto del entorno (`PORT`).
+
+### GitHub Codespaces
+
+Permite ejecutar todo desde GitHub sin instalar nada local.
+- Abre el repo → Code → "Create codespace on main".
+- En el terminal del Codespace:
+  - `node basic-server.cjs` (backend + estáticos)
+  - Abre el puerto publicado y usa la URL generada para el cliente.
+
+## 🧪 Ejecución Local
+
+Requisitos:
+- Node.js
+
+Backend y cliente estático:
 ```bash
-node start-both.cjs
+# Windows (PowerShell)
+$env:PORT=3006; node basic-server.cjs
+# macOS/Linux
+PORT=3006 node basic-server.cjs
 ```
 
-### Opción 2: Iniciar servicios por separado
+Cliente: abrir `http://localhost:3006/`.
 
-**Backend (API)**:
-```bash
-node basic-server.cjs
-```
-- Servidor: http://localhost:3001
-- API: http://localhost:3001/api
+## 📡 Endpoints principales
 
-**Frontend (Cliente)**:
-```bash
-# Si Vite funciona:
-cd node_modules/vite && node bin/vite.js --port 5173
+- `POST /api/auth/register`
+- `POST /api/auth/login`
+- `GET /api/auth/me`
+- Rutas cliente: `/login.html`, `/student-dashboard.html`, `/teacher-dashboard.html`
 
-# Si no, construir manualmente:
-npm run build
-```
+## 🔧 Notas de configuración del cliente
 
-## 📡 API Endpoints Disponibles
+- El cliente detecta GitHub Pages y ajusta rutas automáticamente.
+- Para usar backend externo en Pages, define `API_BASE` vía `?api=` o `localStorage.apiBase`.
 
-| Endpoint | Método | Descripción |
-|----------|--------|-------------|
-| `/api/health` | GET | Estado del servidor |
-| `/api/survey-questions` | GET | Obtener preguntas de encuesta |
-| `/api/survey-responses` | POST | Enviar respuestas de encuesta |
-
-## 🗃️ Base de Datos
-
-**Archivo**: `dev.db` (SQLite)
-
-**Tablas**:
-- `survey_questions`: Preguntas de la encuesta
-- `users`: Usuarios del sistema  
-- `survey_responses`: Respuestas de los usuarios
-
-## 🛠️ Solución de Problemas
-
-### Error: "node no está reconocido"
-- Usa rutas completas: `"C:\\Program Files\\nodejs\\node.exe"`
-- Verifica que Node.js esté instalado
-
-### Error: "Cannot find module"
-- Asegúrate de ejecutar `npm install` primero
-- Verifica que `node_modules` exista
-
-### Cliente no construye
-- El servidor backend funciona independientemente
-- Puedes acceder a la API directamente desde http://localhost:3000
-
-## 📁 Estructura del Proyecto
+## 📁 Estructura
 
 ```
 saa/
-├── client/          # Frontend React
-├── server/          # Backend Node.js
-├── shared/          # Esquemas compartidos
-├── dev.db           # Base de datos SQLite
-├── basic-server.cjs # Servidor backend funcionando
-└── start-both.cjs   # Script de inicio
+├── client/                 # HTML/CSS/JS estático y dashboards
+├── basic-server.cjs        # Servidor Node simple (API + estáticos)
+├── server/                 # Código TS (opcional, no usado por el server simple)
+├── .github/workflows/      # Deploy a GitHub Pages
+└── README.md               # Instrucciones
 ```
 
-## 🎯 Próximos Pasos
+## 🛠️ Problemas comunes
 
-1. ✅ Backend API - **COMPLETADO**
-2. ✅ Base de datos - **COMPLETADO**  
-3. 🔄 Frontend cliente - En progreso
-4. 📊 Integración completa - Pendiente
+- `node` no reconocido: usa ruta completa `"C:\\Program Files\\nodejs\\node.exe"`.
+- Puerto ocupado: cambia `PORT` (ej. 3006).
+- En Pages sin backend: configura `?api=` o `localStorage.apiBase` con la URL del backend.
 
----
+## 🎯 Estado
 
-**Estado**: Backend funcionando ✅  
-**Última actualización**: Servidor API operativo con datos de ejemplo
+- Cliente estático listo para Pages.
+- Backend listo para desplegar (Render/Railway) o ejecutar localmente.
