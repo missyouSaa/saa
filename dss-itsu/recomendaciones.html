@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>ITSU DSS – Recomendaciones</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <header>
+    <div class="title">Recomendaciones Personalizadas</div>
+    <nav>
+      <a href="index.html">Inicio</a>
+      <a href="test-ils.html">Test ILS</a>
+      <a href="perfil.html">Perfil</a>
+      <button class="btn outline" onclick="ITSU.toggleDark()">Modo oscuro/claro</button>
+    </nav>
+  </header>
+  <div class="container">
+    <div class="grid grid-2" id="recs"></div>
+    <div class="space"></div>
+    <div class="row right">
+      <button class="btn outline" onclick="window.print()">Exportar en PDF</button>
+      <a class="btn" href="#" onclick="alert('Integración simulada con Moodle'); return false;">Ir a Moodle</a>
+    </div>
+  </div>
+
+  <script src="script.js"></script>
+  <script>
+    const perfil = JSON.parse(localStorage.getItem('perfil') || 'null');
+    const root = document.getElementById('recs');
+    if (!perfil) {
+      root.innerHTML = '<div class="card">Primero realiza el <a href="test-ils.html">Test ILS</a>.</div>';
+    } else {
+      const recs = ITSU.getRecomendaciones(perfil);
+      const sections = [
+        { title: `Activo/Reflexivo: ${perfil.activo_reflexivo}`, items: recs.AR },
+        { title: `Sensorial/Intuitivo: ${perfil.sensorial_intuitivo}`, items: recs.SI },
+        { title: `Visual/Verbal: ${perfil.visual_verbal}`, items: recs.VV },
+        { title: `Secuencial/Global: ${perfil.secuencial_global}`, items: recs.SG },
+      ];
+      root.innerHTML = sections.map(sec => `
+        <div class="card">
+          <h3>${sec.title}</h3>
+          <ul>
+            ${sec.items.map(i => `<li>${i}</li>`).join('')}
+          </ul>
+        </div>
+      `).join('');
+    }
+  </script>
+</body>
+</html>
+

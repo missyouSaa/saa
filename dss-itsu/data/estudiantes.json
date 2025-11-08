@@ -1,0 +1,113 @@
+[
+  {
+    "nombre": "Estudiante 01",
+    "paralelo": "B",
+    "scores": { "activo": 8, "sensorial": 7, "visual": 9, "secuencial": 6 },
+    "perfil": {
+      "activo_reflexivo": "Activo",
+      "sensorial_intuitivo": "Sensorial",
+      "visual_verbal": "Visual",
+      "secuencial_global": "Secuencial"
+    }
+  },
+  {
+    "nombre": "Estudiante 02",
+    "paralelo": "B",
+    "scores": { "activo": 5, "sensorial": 6, "visual": 4, "secuencial": 8 },
+    "perfil": {
+      "activo_reflexivo": "Reflexivo",
+      "sensorial_intuitivo": "Sensorial",
+      "visual_verbal": "Verbal",
+      "secuencial_global": "Secuencial"
+    }
+  },
+  {
+    "nombre": "Estudiante 03",
+    "paralelo": "B",
+    "scores": { "activo": 9, "sensorial": 5, "visual": 7, "secuencial": 4 },
+    "perfil": {
+      "activo_reflexivo": "Activo",
+      "sensorial_intuitivo": "Intuitivo",
+      "visual_verbal": "Visual",
+      "secuencial_global": "Global"
+    }
+  },
+  {
+    "nombre": "Estudiante 04",
+    "paralelo": "B",
+    "scores": { "activo": 3, "sensorial": 4, "visual": 6, "secuencial": 9 },
+    "perfil": {
+      "activo_reflexivo": "Reflexivo",
+      "sensorial_intuitivo": "Intuitivo",
+      "visual_verbal": "Visual",
+      "secuencial_global": "Secuencial"
+    }
+  },
+  {
+    "nombre": "Estudiante 05",
+    "paralelo": "B",
+    "scores": { "activo": 7, "sensorial": 8, "visual": 5, "secuencial": 5 },
+    "perfil": {
+      "activo_reflexivo": "Activo",
+      "sensorial_intuitivo": "Sensorial",
+      "visual_verbal": "Verbal",
+      "secuencial_global": "Global"
+    }
+  },
+  {
+    "nombre": "Estudiante 06",
+    "paralelo": "B",
+    "scores": { "activo": 4, "sensorial": 3, "visual": 9, "secuencial": 7 },
+    "perfil": {
+      "activo_reflexivo": "Reflexivo",
+      "sensorial_intuitivo": "Intuitivo",
+      "visual_verbal": "Visual",
+      "secuencial_global": "Secuencial"
+    }
+  },
+  {
+    "nombre": "Estudiante 07",
+    "paralelo": "B",
+    "scores": { "activo": 6, "sensorial": 9, "visual": 6, "secuencial": 6 },
+    "perfil": {
+      "activo_reflexivo": "Activo",
+      "sensorial_intuitivo": "Sensorial",
+      "visual_verbal": "Visual",
+      "secuencial_global": "Secuencial"
+    }
+  },
+  {
+    "nombre": "Estudiante 08",
+    "paralelo": "B",
+    "scores": { "activo": 2, "sensorial": 5, "visual": 3, "secuencial": 8 },
+    "perfil": {
+      "activo_reflexivo": "Reflexivo",
+      "sensorial_intuitivo": "Intuitivo",
+      "visual_verbal": "Verbal",
+      "secuencial_global": "Secuencial"
+    }
+  },
+  {
+    "nombre": "Estudiante 09",
+    "paralelo": "B",
+    "scores": { "activo": 10, "sensorial": 7, "visual": 8, "secuencial": 3 },
+    "perfil": {
+      "activo_reflexivo": "Activo",
+      "sensorial_intuitivo": "Sensorial",
+      "visual_verbal": "Visual",
+      "secuencial_global": "Global"
+    }
+  },
+  {
+    "nombre": "Estudiante 10",
+    "paralelo": "B",
+    "scores": { "activo": 5, "sensorial": 4, "visual": 5, "secuencial": 10 },
+    "perfil": {
+      "activo_reflexivo": "Reflexivo",
+      "sensorial_intuitivo": "Intuitivo",
+      "visual_verbal": "Verbal",
+      "secuencial_global": "Secuencial"
+    }
+  }
+]
+

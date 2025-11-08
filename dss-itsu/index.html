@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>ITSU DSS – Selector de Rol</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <header>
+    <div class="title">Instituto Superior Tecnológico Sudamericano – DSS ITSU</div>
+    <nav>
+      <a href="index.html">Inicio</a>
+      <a href="test-ils.html">Test ILS</a>
+      <a href="perfil.html">Perfil</a>
+      <a href="recomendaciones.html">Recomendaciones</a>
+      <a href="docente.html">Docente</a>
+      <button class="btn outline" onclick="ITSU.toggleDark()">Modo oscuro/claro</button>
+    </nav>
+  </header>
+  <div class="container">
+    <div class="card center">
+      <h2>Selecciona tu rol</h2>
+      <p class="muted">El flujo del ILS está disponible para estudiantes; el panel para docentes.</p>
+      <div class="space"></div>
+      <div class="row center" style="justify-content:center; gap:16px;">
+        <button class="btn" onclick="loginRole('estudiante')">Estudiante</button>
+        <button class="btn secondary" onclick="loginRole('docente')">Docente</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="script.js"></script>
+  <script>
+    function loginRole(role) {
+      ITSU.setRole(role);
+      if (role === 'estudiante') {
+        window.location.href = 'test-ils.html';
+      } else {
+        window.location.href = 'docente.html';
+      }
+    }
+  </script>
+</body>
+</html>

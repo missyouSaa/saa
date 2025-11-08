@@ -1,0 +1,10 @@
+{
+  "intercept": -2.0,
+  "coefs": {
+    "visual": 0.15,
+    "activo": -0.05,
+    "nota1": -0.30,
+    "nota2": -0.35,
+    "asistencia": -0.80
+  }
+}

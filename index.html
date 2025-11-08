@@ -1,22 +1,409 @@
 <!DOCTYPE html>
 <html lang="es">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1" />
-    <title>ITSU Analytics - Plataforma de Análisis Educativo</title>
-    <meta name="description" content="Plataforma educativa para tracking de progreso estudiantil, análisis de perfiles cognitivos y métricas de rendimiento académico." />
-    
-    <!-- Open Graph Tags -->
-    <meta property="og:title" content="ITSU Analytics - Plataforma de Análisis Educativo" />
-    <meta property="og:description" content="Sistema integral de análisis educativo con seguimiento de progreso estudiantil, perfiles cognitivos y analíticas en tiempo real." />
-    <meta property="og:type" content="website" />
-    
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&family=JetBrains+Mono:ital,wght@0,100..800;1,100..800&family=Merriweather:ital,wght@0,300..900;1,300..900&display=swap" rel="stylesheet">
-  </head>
-  <body>
-    <div id="root"></div>
-    <script type="module" src="/src/main.tsx"></script>
-  </body>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Survey App - Encuestas Tecnológicas</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #333;
+        }
+
+        .container {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            padding: 40px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+            max-width: 600px;
+            width: 90%;
+            text-align: center;
+        }
+
+        h1 {
+            color: #4a5568;
+            margin-bottom: 20px;
+            font-size: 2.5em;
+            font-weight: 700;
+        }
+
+        .subtitle {
+            color: #718096;
+            font-size: 1.2em;
+            margin-bottom: 30px;
+        }
+
+        .survey-container {
+            background: #f7fafc;
+            border-radius: 15px;
+            padding: 30px;
+            margin: 20px 0;
+            text-align: left;
+        }
+
+        .question {
+            margin-bottom: 20px;
+        }
+
+        .question h3 {
+            color: #2d3748;
+            margin-bottom: 10px;
+            font-size: 1.1em;
+        }
+
+        .options {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .option {
+            background: white;
+            border: 2px solid #e2e8f0;
+            border-radius: 10px;
+            padding: 15px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .option:hover {
+            border-color: #667eea;
+            background: #f0f4ff;
+        }
+
+        .option.selected {
+            border-color: #667eea;
+            background: #667eea;
+            color: white;
+        }
+
+        .btn {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            border-radius: 10px;
+            font-size: 1.1em;
+            font-weight: 600;
+            cursor: pointer;
+            transition: transform 0.2s ease;
+            margin: 10px;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+        }
+
+        .btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .progress-bar {
+            background: #e2e8f0;
+            border-radius: 10px;
+            height: 8px;
+            margin: 20px 0;
+            overflow: hidden;
+        }
+
+        .progress {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            height: 100%;
+            transition: width 0.3s ease;
+        }
+
+        .loading {
+            text-align: center;
+            padding: 40px;
+        }
+
+        .spinner {
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid #667eea;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 20px;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .error {
+            background: #fed7d7;
+            color: #c53030;
+            padding: 15px;
+            border-radius: 10px;
+            margin: 20px 0;
+        }
+
+        .success {
+            background: #c6f6d5;
+            color: #276749;
+            padding: 15px;
+            border-radius: 10px;
+            margin: 20px 0;
+            text-align: center;
+        }
+
+        .rating {
+            display: flex;
+            gap: 10px;
+            justify-content: center;
+            margin: 15px 0;
+        }
+
+        .star {
+            font-size: 2em;
+            color: #e2e8f0;
+            cursor: pointer;
+            transition: color 0.2s ease;
+        }
+
+        .star:hover,
+        .star.active {
+            color: #fbbf24;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div style="background:#fff3cd;border:1px solid #ffeeba;color:#856404;border-radius:10px;padding:12px 16px;margin-bottom:16px;text-align:left;">
+            <strong>Nuevo:</strong> Explora DSS-ITSU y ECAS
+            — <a href="/dss-itsu/index.html" style="color:#2b6cb0;text-decoration:underline;">Inicio DSS-ITSU</a> ·
+            <a href="/dss-itsu/test-ils.html" style="color:#2b6cb0;text-decoration:underline;">Test ILS</a> ·
+            <a href="/dss-itsu/perfil.html" style="color:#2b6cb0;text-decoration:underline;">Perfil + ECAS</a> ·
+            <a href="/dss-itsu/docente.html" style="color:#2b6cb0;text-decoration:underline;">Panel Docente</a>
+        </div>
+        <h1>🚀 Survey App</h1>
+        <p class="subtitle">Encuestas sobre uso de tecnología</p>
+        
+        <div id="app">
+            <div class="loading">
+                <div class="spinner"></div>
+                <p>Cargando encuesta...</p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        class SurveyApp {
+            constructor() {
+                this.questions = [];
+                this.currentQuestion = 0;
+                this.responses = [];
+                this.apiUrl = '/api';
+                this.init();
+            }
+
+            async init() {
+                try {
+                    await this.loadQuestions();
+                    this.render();
+                } catch (error) {
+                    this.showError('Error al cargar la encuesta: ' + error.message);
+                }
+            }
+
+            async loadQuestions() {
+                const response = await fetch(`${this.apiUrl}/survey-questions`);
+                if (!response.ok) {
+                    throw new Error('No se pudieron cargar las preguntas');
+                }
+                this.questions = await response.json();
+            }
+
+            render() {
+                const app = document.getElementById('app');
+                
+                if (this.currentQuestion >= this.questions.length) {
+                    this.showResults();
+                    return;
+                }
+
+                const question = this.questions[this.currentQuestion];
+                const progress = ((this.currentQuestion + 1) / this.questions.length) * 100;
+
+                app.innerHTML = `
+                    <div class="survey-container">
+                        <div class="progress-bar">
+                            <div class="progress" style="width: ${progress}%"></div>
+                        </div>
+                        <p style="text-align: center; color: #718096; margin-bottom: 20px;">
+                            Pregunta ${this.currentQuestion + 1} de ${this.questions.length}
+                        </p>
+                        <div class="question">
+                            <h3>${question.question}</h3>
+                            ${this.renderQuestionOptions(question)}
+                        </div>
+                        <div style="text-align: center;">
+                            <button class="btn" onclick="app.previousQuestion()" ${this.currentQuestion === 0 ? 'disabled' : ''}>
+                                Anterior
+                            </button>
+                            <button class="btn" onclick="app.nextQuestion()" ${!this.hasAnsweredCurrent() ? 'disabled' : ''}>
+                                ${this.currentQuestion === this.questions.length - 1 ? 'Finalizar' : 'Siguiente'}
+                            </button>
+                        </div>
+                    </div>
+                `;
+            }
+
+            renderQuestionOptions(question) {
+                if (question.type === 'multiple_choice') {
+                    return `
+                        <div class="options">
+                            ${question.options.map((option, index) => `
+                                <div class="option" onclick="app.selectOption(${index})" 
+                                     data-index="${index}">
+                                    ${option}
+                                </div>
+                            `).join('')}
+                        </div>
+                    `;
+                } else if (question.type === 'rating') {
+                    return `
+                        <div class="rating">
+                            ${Array.from({length: question.scale}, (_, i) => `
+                                <span class="star" onclick="app.selectRating(${i + 1})" 
+                                      data-rating="${i + 1}">★</span>
+                            `).join('')}
+                        </div>
+                        <p style="text-align: center; color: #718096; margin-top: 10px;">
+                            Selecciona una puntuación del 1 al ${question.scale}
+                        </p>
+                    `;
+                }
+                return '';
+            }
+
+            selectOption(index) {
+                const options = document.querySelectorAll('.option');
+                options.forEach(opt => opt.classList.remove('selected'));
+                options[index].classList.add('selected');
+                this.responses[this.currentQuestion] = {
+                    questionId: this.questions[this.currentQuestion].id,
+                    answer: this.questions[this.currentQuestion].options[index]
+                };
+                this.updateButtons();
+            }
+
+            selectRating(rating) {
+                const stars = document.querySelectorAll('.star');
+                stars.forEach((star, index) => {
+                    star.classList.toggle('active', index < rating);
+                });
+                this.responses[this.currentQuestion] = {
+                    questionId: this.questions[this.currentQuestion].id,
+                    answer: rating
+                };
+                this.updateButtons();
+            }
+
+            hasAnsweredCurrent() {
+                return this.responses[this.currentQuestion] !== undefined;
+            }
+
+            updateButtons() {
+                const nextBtn = document.querySelector('.btn:last-child');
+                if (nextBtn) {
+                    nextBtn.disabled = !this.hasAnsweredCurrent();
+                }
+            }
+
+            nextQuestion() {
+                if (!this.hasAnsweredCurrent()) return;
+                
+                if (this.currentQuestion === this.questions.length - 1) {
+                    this.submitSurvey();
+                } else {
+                    this.currentQuestion++;
+                    this.render();
+                }
+            }
+
+            previousQuestion() {
+                if (this.currentQuestion > 0) {
+                    this.currentQuestion--;
+                    this.render();
+                }
+            }
+
+            async submitSurvey() {
+                try {
+                    const response = await fetch(`${this.apiUrl}/survey-responses`, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify({
+                            responses: this.responses,
+                            timestamp: new Date().toISOString()
+                        })
+                    });
+
+                    if (!response.ok) {
+                        throw new Error('Error al enviar las respuestas');
+                    }
+
+                    this.showSuccess();
+                } catch (error) {
+                    this.showError('Error al enviar las respuestas: ' + error.message);
+                }
+            }
+
+            showResults() {
+                const app = document.getElementById('app');
+                app.innerHTML = `
+                    <div class="success">
+                        <h2>🎉 ¡Encuesta Completada!</h2>
+                        <p>Gracias por participar en nuestra encuesta sobre tecnología.</p>
+                        <button class="btn" onclick="location.reload()">Comenzar Nueva Encuesta</button>
+                    </div>
+                `;
+            }
+
+            showSuccess() {
+                const app = document.getElementById('app');
+                app.innerHTML = `
+                    <div class="success">
+                        <h2>✅ Respuestas Enviadas</h2>
+                        <p>¡Gracias por completar la encuesta!</p>
+                        <button class="btn" onclick="location.reload()">Comenzar Nueva Encuesta</button>
+                    </div>
+                `;
+            }
+
+            showError(message) {
+                const app = document.getElementById('app');
+                app.innerHTML = `
+                    <div class="error">
+                        <h3>❌ Error</h3>
+                        <p>${message}</p>
+                        <button class="btn" onclick="location.reload()">Reintentar</button>
+                    </div>
+                `;
+            }
+        }
+
+        // Inicializar la aplicación
+        const app = new SurveyApp();
+    </script>
+</body>
 </html>
