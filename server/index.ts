@@ -5,6 +5,8 @@ import { registerRoutes } from "./routes";
 import { setupAuth } from "./auth";
 import { pool } from "./db";
 import { setupVite, serveStatic, log } from "./vite";
+import path from "path";
+import fs from "fs";
 
 const app = express();
 app.use(express.json());
@@ -86,6 +88,29 @@ app.use((req, res, next) => {
   // setting up all the other routes so the catch-all route
   // doesn't interfere with the other routes
   if (app.get("env") === "development") {
+    // Serve static files from /client to allow direct HTML pages (login, dashboards)
+    const clientDir = path.resolve(import.meta.dirname, "..", "client");
+    app.use(express.static(clientDir));
+
+    // Explicit routes for top-level HTML files to avoid Vite catch-all overriding them
+    const staticPages = [
+      "/login.html",
+      "/student-dashboard.html",
+      "/teacher-dashboard.html",
+      "/survey.html",
+      "/test-login.html",
+    ];
+    for (const page of staticPages) {
+      app.get(page, (_req, res) => {
+        const filePath = path.join(clientDir, page.replace(/^\//, ""));
+        if (fs.existsSync(filePath)) {
+          res.sendFile(filePath);
+        } else {
+          res.status(404).send("Not Found");
+        }
+      });
+    }
+
     await setupVite(app, server);
   } else {
     serveStatic(app);

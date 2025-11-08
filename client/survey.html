@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Encuesta – SAA</title>
+  <link rel="stylesheet" href="styles.css" />
+  <script defer src="telemetry.js"></script>
+  <style>
+    body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background:#f7fafc; color:#333; }
+    .container { max-width: 900px; margin: 0 auto; padding: 20px; }
+    .header { display:flex; align-items:center; justify-content:space-between; margin-bottom: 16px; }
+    .card { background:#fff; border-radius: 12px; box-shadow: 0 6px 20px rgba(0,0,0,0.08); padding: 20px; margin-bottom: 16px; }
+    .btn { background:#0ea5e9; color:#fff; border:none; padding:10px 14px; border-radius:8px; cursor:pointer; font-weight:600; }
+    .btn.secondary { background:#10b981; }
+    .muted { color:#666; }
+  </style>
+</head>
+<body>
+  <script src="/auth.js"></script>
+  <script>
+    if (window.SAAAuth) {
+      window.SAAAuth.requireAuth({ allowedRole: 'student' });
+      window.SAAAuth.injectLogoutBar();
+    }
+    if (window.SAATelemetry) { window.SAATelemetry.track('page_view', { page: 'survey' }); }
+  </script>
+  <div class="container">
+    <div class="header">
+      <h1>📝 Encuesta</h1>
+      <button class="btn" onclick="window.location.href='student-dashboard.html'">Volver al Dashboard</button>
+    </div>
+    <div class="card">
+      <h3>Encuestas disponibles</h3>
+      <p class="muted">Selecciona una encuesta para comenzar.</p>
+      <ul>
+        <li><strong>Encuesta de Tecnología Educativa</strong> — <em>Categoría: Tecnología</em> <button class="btn" onclick="startSurvey('tecnologia')">Iniciar</button></li>
+        <li><strong>Evaluación de Docentes</strong> — <em>Categoría: Desempeño</em> <button class="btn" onclick="startSurvey('docentes')">Iniciar</button></li>
+      </ul>
+    </div>
+
+    <div id="survey-root" class="card" style="display:none"></div>
+  </div>
+
+  <script>
+    function startSurvey(type) {
+      const root = document.getElementById('survey-root');
+      root.style.display = 'block';
+      if (type === 'tecnologia') {
+        root.innerHTML = `
+          <h3>Encuesta de Tecnología Educativa</h3>
+          <p class="muted">Responde las preguntas y envía tu evaluación.</p>
+          <div>
+            <p>1. ¿Con qué frecuencia utilizas plataformas educativas digitales?</p>
+            <label><input type="radio" name="q1" value="Siempre"/> Siempre</label>
+            <label><input type="radio" name="q1" value="A veces"/> A veces</label>
+            <label><input type="radio" name="q1" value="Nunca"/> Nunca</label>
+          </div>
+          <div style="margin-top:10px">
+            <p>2. Califica tu satisfacción con las herramientas tecnológicas (1-5)</p>
+            <input type="range" min="1" max="5" step="1" id="q2" />
+          </div>
+          <div style="margin-top:16px">
+            <button class="btn secondary" onclick="submitSurvey()">Enviar</button>
+          </div>
+        `;
+      } else {
+        root.innerHTML = `
+          <h3>Evaluación de Docentes</h3>
+          <p class="muted">Responde y envía tu evaluación.</p>
+          <div>
+            <p>1. ¿Cómo calificas la claridad de las clases?</p>
+            <select id="q1">
+              <option value="Excelente">Excelente</option>
+              <option value="Buena">Buena</option>
+              <option value="Regular">Regular</option>
+              <option value="Deficiente">Deficiente</option>
+            </select>
+          </div>
+          <div style="margin-top:10px">
+            <p>2. Comentarios</p>
+            <textarea id="q2" rows="3" style="width:100%"></textarea>
+          </div>
+          <div style="margin-top:16px">
+            <button class="btn secondary" onclick="submitSurvey()">Enviar</button>
+          </div>
+        `;
+      }
+    }
+
+    function submitSurvey() {
+      alert('Encuesta enviada. ¡Gracias por participar!');
+    }
+  </script>
+</body>
+</html>

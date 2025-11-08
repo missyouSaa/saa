@@ -4,6 +4,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Survey App - Encuestas Tecnológicas</title>
+    <link rel="stylesheet" href="styles.css">
+    <script defer src="telemetry.js"></script>
     <style>
         * {
             margin: 0;
@@ -184,13 +186,12 @@
     </style>
 </head>
 <body>
+    <script>
+      if (window.SAATelemetry) { window.SAATelemetry.track('page_view', { page: 'landing' }); }
+    </script>
     <div class="container">
         <div style="background:#fff3cd;border:1px solid #ffeeba;color:#856404;border-radius:10px;padding:12px 16px;margin-bottom:16px;text-align:left;">
-            <strong>Nuevo:</strong> Explora DSS-ITSU y ECAS
-            — <a href="/dss-itsu/index.html" style="color:#2b6cb0;text-decoration:underline;">Inicio DSS-ITSU</a> ·
-            <a href="/dss-itsu/test-ils.html" style="color:#2b6cb0;text-decoration:underline;">Test ILS</a> ·
-            <a href="/dss-itsu/perfil.html" style="color:#2b6cb0;text-decoration:underline;">Perfil + ECAS</a> ·
-            <a href="/dss-itsu/docente.html" style="color:#2b6cb0;text-decoration:underline;">Panel Docente</a>
+            <strong>Nuevo:</strong> Explora DSS-ITSU y ECAS desde tu dashboard después de iniciar sesión.
         </div>
         <h1>🚀 Survey App</h1>
         <p class="subtitle">Encuestas sobre uso de tecnología</p>
@@ -210,11 +211,12 @@
             const BASE_PATH = location.hostname.endsWith('github.io') ? `/${location.pathname.split('/')[1]}` : '';
             // Si el sitio está sirviendo esta landing, redirigimos al login
             // Evitar bucles si ya estamos en login.html
-            const isLogin = location.pathname.endsWith('/login.html');
+            const isLogin = location.pathname.endsWith('/login.html') || location.pathname.endsWith('login.html');
             if (!isLogin) {
                 // Esperar un tick para no interferir con servidores que ya sirven / al login
                 setTimeout(()=>{
                     try {
+                        window.__REDIRECTING_TO_LOGIN = true;
                         location.replace(`${BASE_PATH}/login.html`);
                     } catch {}
                 }, 0);
@@ -418,8 +420,11 @@
             }
         }
 
-        // Inicializar la aplicación
-        const app = new SurveyApp();
+        // Inicializar la aplicación solo si no hay redirección a login
+        if (!window.__REDIRECTING_TO_LOGIN) {
+            const app = new SurveyApp();
+            window.app = app;
+        }
     </script>
 </body>
 </html>

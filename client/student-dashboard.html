@@ -4,6 +4,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Dashboard - Estudiante</title>
+    <link rel="stylesheet" href="styles.css">
+    <script defer src="telemetry.js"></script>
     <style>
         * {
             margin: 0;
@@ -217,9 +219,19 @@
     </style>
 </head>
 <body>
+    <script src="/auth.js"></script>
+    <script>
+        // Enforce auth and inject persistent logout bar
+        if (window.SAAAuth) {
+            window.SAAAuth.requireAuth({ allowedRole: 'student' });
+            window.SAAAuth.injectLogoutBar();
+        }
+        // Telemetría: vista de página
+        if (window.SAATelemetry) { window.SAATelemetry.track('page_view', { page: 'student-dashboard' }); }
+    </script>
     <div class="container">
-        <div style="background:#fff3cd;border:1px solid #ffeeba;color:#856404;border-radius:10px;padding:12px 16px;margin:16px 0;text-align:left;">
-            <strong>Nuevo:</strong> Explora tu <a href="/dss-itsu/test-ils.html" style="color:#2b6cb0;text-decoration:underline;">Test ILS</a>, tu <a href="/dss-itsu/perfil.html" style="color:#2b6cb0;text-decoration:underline;">Perfil + ECAS</a> y las <a href="/dss-itsu/recomendaciones.html" style="color:#2b6cb0;text-decoration:underline;">Recomendaciones</a>.
+        <div class="notice">
+            <strong>Nuevo:</strong> Explora tu <a href="/dss-itsu/test-ils.html" class="nav-link">Test ILS</a>, tu <a href="/dss-itsu/perfil.html" class="nav-link">Perfil + ECAS</a> y las <a href="/dss-itsu/recomendaciones.html" class="nav-link">Recomendaciones</a>.
         </div>
         <div id="loading" class="loading">Cargando dashboard...</div>
         <div id="error" class="error" style="display: none;"></div>
@@ -228,7 +240,6 @@
                 <h1>📚 Dashboard Estudiante</h1>
                 <div class="user-info">
                     <span id="user-name"></span>
-                    <button class="logout-btn" onclick="logout()">Cerrar Sesión</button>
                 </div>
             </div>
 
@@ -416,6 +427,10 @@
         }
 
         async function loadPendingSurveys() {
+            const fallback = [
+                { question: 'Encuesta de Tecnología Educativa', category: 'Tecnología' },
+                { question: 'Evaluación de Docentes', category: 'Desempeño' }
+            ];
             try {
                 const token = localStorage.getItem('authToken');
                 const response = await fetch('/api/student/surveys/pending', {
@@ -426,10 +441,13 @@
 
                 if (response.ok) {
                     const pendingSurveys = await response.json();
-                    displayPendingSurveys(pendingSurveys);
+                    displayPendingSurveys(Array.isArray(pendingSurveys) && pendingSurveys.length ? pendingSurveys : fallback);
+                } else {
+                    displayPendingSurveys(fallback);
                 }
             } catch (error) {
                 console.error('Error al cargar encuestas pendientes:', error);
+                displayPendingSurveys(fallback);
             }
         }
 
@@ -451,20 +469,7 @@
             }
         }
 
-        async function logout() {
-            try {
-                // Limpiar localStorage
-                localStorage.removeItem('authToken');
-                localStorage.removeItem('userRole');
-                localStorage.removeItem('userFirstName');
-                localStorage.removeItem('userLastName');
-                
-                window.location.href = '/login.html';
-            } catch (error) {
-                console.error('Error al cerrar sesión:', error);
-                window.location.href = '/login.html';
-            }
-        }
+        // logout handled by global SAAAuth.logout via barra superior
 
         // Cargar dashboard al iniciar
         loadDashboard();
@@ -472,14 +477,16 @@
         // ECAS predicción rápida
         async function predictRiskQuick() {
             try {
-                const nota1 = parseFloat(document.getElementById('ecasNota1').value || studentProfile?.average || 8);
-                const nota2 = parseFloat(document.getElementById('ecasNota2').value || (studentProfile?.average ? (studentProfile.average - 0.3) : 7.8));
-                const asistencia = parseFloat(document.getElementById('ecasAsis').value || 85);
-                const modelResp = await fetch('/dss-itsu/data/model.json');
+                const nota1 = parseFloat(document.getElementById('ecasNota1')?.value || studentProfile?.average || 8);
+                const nota2 = parseFloat(document.getElementById('ecasNota2')?.value || (studentProfile?.average ? (studentProfile.average - 0.3) : 7.8));
+                const asistencia = parseFloat(document.getElementById('ecasAsis')?.value || 85);
+                const modelResp = await fetch('dss-itsu/data/model.json'); // relativo para GitHub Pages
                 const model = await modelResp.json();
+                const coefs = model?.coefs || { visual: 0.0, activo: 0.0, nota1: -0.3, nota2: -0.35, asistencia: -0.8 };
+                const intercept = typeof model?.intercept === 'number' ? model.intercept : -2.0;
                 const visual = 0.0;
                 const activo = 0.0;
-                const logit = model.intercept + model.coefficients.visual * visual + model.coefficients.activo * activo + model.coefficients.nota1 * nota1 + model.coefficients.nota2 * nota2 + model.coefficients.asistencia * asistencia;
+                const logit = intercept + coefs.visual * visual + coefs.activo * activo + coefs.nota1 * nota1 + coefs.nota2 * nota2 + coefs.asistencia * asistencia;
                 const prob = 1 / (1 + Math.exp(-logit));
                 const pct = (prob * 100).toFixed(1);
                 document.getElementById('ecasResult').textContent = `Riesgo estimado de deserción: ${pct}%`;

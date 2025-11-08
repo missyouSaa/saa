@@ -307,6 +307,28 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // ============= TELEMETRY (stub) =============
+  // Accepts a batch of client-side telemetry events and discards/logs them for now
+  app.post("/api/telemetry/events", (req, res) => {
+    try {
+      const events = req.body?.events;
+      if (!Array.isArray(events)) {
+        return res.status(400).json({ message: "Formato inválido: se espera { events: [] }" });
+      }
+      // Attach user if available
+      const user = req.isAuthenticated() ? req.user : null;
+      console.log(`[telemetry] received ${events.length} event(s)`, {
+        user: user ? { id: (user as any).id, role: (user as any).role } : null,
+        sample: events[0] || null,
+      });
+      // No persistence yet; acknowledge
+      return res.status(204).end();
+    } catch (e) {
+      console.error("Error al procesar telemetría:", e);
+      return res.status(500).json({ message: "Error al procesar telemetría" });
+    }
+  });
+
   const httpServer = createServer(app);
   return httpServer;
 }

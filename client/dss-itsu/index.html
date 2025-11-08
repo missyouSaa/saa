@@ -3,8 +3,9 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>ITSU DSS – Selector de Rol</title>
+  <title>ITSU DSS – Inicio</title>
   <link rel="stylesheet" href="style.css" />
+  <link rel="stylesheet" href="../styles.css" />
 </head>
 <body>
   <header>
@@ -20,25 +21,21 @@
   </header>
   <div class="container">
     <div class="card center">
-      <h2>Selecciona tu rol</h2>
-      <p class="muted">El flujo del ILS está disponible para estudiantes; el panel para docentes.</p>
-      <div class="space"></div>
-      <div class="row center" style="justify-content:center; gap:16px;">
-        <button class="btn" onclick="loginRole('estudiante')">Estudiante</button>
-        <button class="btn secondary" onclick="loginRole('docente')">Docente</button>
-      </div>
+      <h2>Redirigiendo a tu dashboard…</h2>
+      <p class="muted">Mantén tu sesión iniciada para acceder a las secciones.</p>
     </div>
   </div>
 
+  <script src="/auth.js"></script>
   <script src="script.js"></script>
   <script>
-    function loginRole(role) {
-      ITSU.setRole(role);
-      if (role === 'estudiante') {
-        window.location.href = 'test-ils.html';
-      } else {
-        window.location.href = 'docente.html';
-      }
+    // Requiere autenticación y muestra barra global de logout
+    if (window.SAAAuth) {
+      window.SAAAuth.requireAuth();
+      window.SAAAuth.injectLogoutBar();
+      const role = localStorage.getItem('userRole');
+      const dest = role === 'teacher' ? (window.SAAAuth.BASE_PATH + '/teacher-dashboard.html') : (window.SAAAuth.BASE_PATH + '/student-dashboard.html');
+      window.location.href = dest;
     }
   </script>
 </body>

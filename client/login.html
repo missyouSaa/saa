@@ -4,6 +4,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>ITSU Analytics - Login</title>
+    <link rel="stylesheet" href="styles.css">
+    <script defer src="telemetry.js"></script>
     <style>
         * {
             margin: 0;
@@ -218,13 +220,7 @@
         <div class="logo">🎓</div>
         <h1>ITSU Analytics</h1>
         <p class="subtitle">Plataforma de análisis educativo</p>
-        <div style="background:#f0f9ff;border:1px solid #bae6fd;color:#0ea5e9;padding:10px 12px;border-radius:10px;margin:12px 0;text-align:left;">
-            💡 Nuevo: Explora DSS-ITSU y ECAS.
-            <a href="/dss-itsu/index.html" style="font-weight:600;color:#0ea5e9;margin-right:8px;">Inicio DSS-ITSU</a>
-            <a href="/dss-itsu/test-ils.html" style="font-weight:600;color:#0ea5e9;margin-right:8px;">Test ILS</a>
-            <a href="/dss-itsu/perfil.html" style="font-weight:600;color:#0ea5e9;margin-right:8px;">Perfil + ECAS</a>
-            <a href="/dss-itsu/docente.html" style="font-weight:600;color:#0ea5e9;">Panel Docente</a>
-        </div>
+        <div class="info-message">💡 Accede primero con tu usuario y rol. Luego navega desde tu dashboard.</div>
 
         <div id="errorMessage" class="error-message"></div>
         <div id="successMessage" class="success-message"></div>
@@ -272,6 +268,8 @@
     </div>
 
     <script>
+        // Telemetría: vista de página
+        if (window.SAATelemetry) { window.SAATelemetry.track('page_view', { page: 'login' }); }
         let selectedRole = 'student';
 
         // Manejar selección de rol
@@ -290,6 +288,10 @@
             const qp = new URLSearchParams(location.search).get('api');
             if (qp) {
                 try { localStorage.setItem('apiBase', qp); } catch {}
+            }
+            // Prefer global auth util if available
+            if (window.SAAAuth && typeof window.SAAAuth.getApiBase === 'function') {
+                return window.SAAAuth.getApiBase();
             }
             return (window.API_BASE || localStorage.getItem('apiBase') || '');
         };
@@ -322,19 +324,20 @@
                 const data = await response.json();
 
                 if (response.ok) {
-                    // Éxito - Guardar datos en localStorage
-                    localStorage.setItem('authToken', data.token);
-                    localStorage.setItem('userRole', data.user.role);
-                    localStorage.setItem('userFirstName', data.user.firstName);
-                    localStorage.setItem('userLastName', data.user.lastName);
+                    // Éxito (sesión por cookie o servidor simple) - Guardar datos mínimos
+                    const userData = (data && data.user) ? data.user : data;
+                    localStorage.setItem('authToken', 'session');
+                    localStorage.setItem('userRole', userData.role || selectedRole);
+                    localStorage.setItem('userFirstName', userData.firstName || '');
+                    localStorage.setItem('userLastName', userData.lastName || '');
                     
                     document.getElementById('successMessage').textContent = '✅ Inicio de sesión exitoso. Redirigiendo...';
                     document.getElementById('successMessage').style.display = 'block';
                     
                     // Redirigir según el rol
                     setTimeout(() => {
-                        if (selectedRole === 'student') {
-                            // Redirigir al dashboard de estudiante (compatible con GitHub Pages)
+                        const roleToGo = (userData.role || selectedRole);
+                        if (roleToGo === 'student') {
                             window.location.href = `${BASE_PATH}/student-dashboard.html`;
                         } else {
                             window.location.href = `${BASE_PATH}/teacher-dashboard.html`;
@@ -464,7 +467,7 @@
                         body: JSON.stringify({ username, password, role: regRole, firstName, lastName })
                     });
                     const data = await response.json();
-                    if (response.ok && data.success) {
+                    if (response.ok && data.user) {
                         msg.textContent = '✅ Cuenta creada. Iniciando sesión automáticamente...';
                         msg.style.display = 'block';
                         // Autologin inmediato tras registro
@@ -474,15 +477,18 @@
                                 headers: { 'Content-Type': 'application/json' },
                                 body: JSON.stringify({ username, password, role: regRole })
                             });
-                            const loginData = await loginRes.json();
-                            if (loginRes.ok && loginData.success) {
-                                localStorage.setItem('authToken', loginData.token);
-                                localStorage.setItem('userRole', loginData.user.role);
-                                localStorage.setItem('userFirstName', loginData.user.firstName || '');
-                                localStorage.setItem('userLastName', loginData.user.lastName || '');
+                            const loginDataRaw = await loginRes.json();
+                            const loginData = (loginDataRaw && loginDataRaw.user) ? loginDataRaw.user : loginDataRaw;
+                            if (loginRes.ok) {
+                                // Sesión por cookie: guardar datos mínimos
+                                localStorage.setItem('authToken', 'session');
+                                localStorage.setItem('userRole', loginData.role || regRole);
+                                localStorage.setItem('userFirstName', loginData.firstName || '');
+                                localStorage.setItem('userLastName', loginData.lastName || '');
                                 // Redirigir según rol
                                 setTimeout(()=>{
-                                    if (regRole === 'student') {
+                                    const roleToGo = loginData.role || regRole;
+                                    if (roleToGo === 'student') {
                                         window.location.href = `${BASE_PATH}/student-dashboard.html`;
                                     } else {
                                         window.location.href = `${BASE_PATH}/teacher-dashboard.html`;

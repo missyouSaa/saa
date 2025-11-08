@@ -175,3 +175,13 @@ export type StudentWithProgress = Student & {
   weeklyProgress: WeeklyProgress[];
   surveyResponses: SurveyResponse[];
 };
+
+// Telemetry event (client-side) schema and type
+export const telemetryEventSchema = z.object({
+  type: z.string(),
+  ts: z.string(),
+  url: z.string().optional(),
+  role: z.string().nullable().optional(),
+  payload: z.any(),
+});
+export type TelemetryEvent = z.infer<typeof telemetryEventSchema>;
