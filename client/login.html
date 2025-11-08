@@ -1,0 +1,509 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ITSU Analytics - Login</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .login-container {
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+            padding: 40px;
+            width: 100%;
+            max-width: 400px;
+            text-align: center;
+        }
+
+        .logo {
+            width: 80px;
+            height: 80px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-radius: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 20px;
+            color: white;
+            font-size: 40px;
+        }
+
+        h1 {
+            color: #333;
+            margin-bottom: 10px;
+            font-size: 28px;
+            font-weight: 700;
+        }
+
+        .subtitle {
+            color: #666;
+            margin-bottom: 30px;
+            font-size: 16px;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+            text-align: left;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            color: #333;
+            font-weight: 500;
+            font-size: 14px;
+        }
+
+        input {
+            width: 100%;
+            padding: 12px 16px;
+            border: 2px solid #e1e8ed;
+            border-radius: 10px;
+            font-size: 16px;
+            transition: all 0.3s ease;
+            background: #f8fafc;
+        }
+
+        input:focus {
+            outline: none;
+            border-color: #667eea;
+            background: white;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+
+        .role-selector {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+
+        .role-btn {
+            flex: 1;
+            padding: 10px;
+            border: 2px solid #e1e8ed;
+            background: #f8fafc;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-weight: 500;
+        }
+
+        .role-btn.active {
+            background: #667eea;
+            color: white;
+            border-color: #667eea;
+        }
+
+        .login-btn {
+            width: 100%;
+            padding: 14px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 10px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-top: 10px;
+        }
+
+        .login-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(102, 126, 234, 0.3);
+        }
+
+        .login-btn:disabled {
+            opacity: 0.7;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .error-message {
+            background: #fee;
+            color: #c33;
+            padding: 12px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            font-size: 14px;
+            display: none;
+        }
+
+        .success-message {
+            background: #efe;
+            color: #3c3;
+            padding: 12px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            font-size: 14px;
+            display: none;
+        }
+
+        .demo-credentials {
+            background: #f0f4ff;
+            border: 1px solid #e0e7ff;
+            border-radius: 10px;
+            padding: 20px;
+            margin-top: 30px;
+            text-align: left;
+        }
+
+        .demo-credentials h3 {
+            color: #333;
+            margin-bottom: 15px;
+            font-size: 16px;
+        }
+
+        .credential {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+            padding: 8px 12px;
+            background: white;
+            border-radius: 6px;
+            font-size: 14px;
+        }
+
+        .credential span {
+            font-weight: 600;
+            color: #667eea;
+        }
+
+        .copy-btn {
+            background: #667eea;
+            color: white;
+            border: none;
+            padding: 4px 8px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 12px;
+        }
+
+        .loading {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 3px solid #f3f3f3;
+            border-top: 3px solid #667eea;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin-right: 10px;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+    </style>
+</head>
+<body>
+    <div class="login-container">
+        <div class="logo">🎓</div>
+        <h1>ITSU Analytics</h1>
+        <p class="subtitle">Plataforma de análisis educativo</p>
+        <div style="background:#f0f9ff;border:1px solid #bae6fd;color:#0ea5e9;padding:10px 12px;border-radius:10px;margin:12px 0;text-align:left;">
+            💡 Nuevo: Explora DSS-ITSU y ECAS.
+            <a href="/dss-itsu/index.html" style="font-weight:600;color:#0ea5e9;margin-right:8px;">Inicio DSS-ITSU</a>
+            <a href="/dss-itsu/test-ils.html" style="font-weight:600;color:#0ea5e9;margin-right:8px;">Test ILS</a>
+            <a href="/dss-itsu/perfil.html" style="font-weight:600;color:#0ea5e9;margin-right:8px;">Perfil + ECAS</a>
+            <a href="/dss-itsu/docente.html" style="font-weight:600;color:#0ea5e9;">Panel Docente</a>
+        </div>
+
+        <div id="errorMessage" class="error-message"></div>
+        <div id="successMessage" class="success-message"></div>
+
+        <form id="loginForm">
+            <div class="form-group">
+                <label for="username">Usuario</label>
+                <input type="text" id="username" name="username" required placeholder="Ingresa tu usuario">
+            </div>
+
+            <div class="form-group">
+                <label for="password">Contraseña</label>
+                <input type="password" id="password" name="password" required placeholder="Ingresa tu contraseña">
+            </div>
+
+            <div class="role-selector">
+                <button type="button" class="role-btn active" data-role="student">Estudiante</button>
+                <button type="button" class="role-btn" data-role="teacher">Profesor</button>
+            </div>
+
+            <button type="submit" class="login-btn" id="loginBtn">
+                Iniciar Sesión
+            </button>
+        </form>
+
+        <div class="demo-credentials">
+            <h3>🎯 Credenciales de Demostración</h3>
+            <div class="credential">
+                <span>Estudiante: <span id="studentUser">estudiante_prueba</span></span>
+                <button class="copy-btn" onclick="copyToClipboard('estudiante_prueba')">Copiar</button>
+            </div>
+            <div class="credential">
+                <span>Contraseña: <span id="studentPass">student123</span></span>
+                <button class="copy-btn" onclick="copyToClipboard('student123')">Copiar</button>
+            </div>
+            <div class="credential">
+                <span>Profesor: <span id="teacherUser">maestro_prueba</span></span>
+                <button class="copy-btn" onclick="copyToClipboard('maestro_prueba')">Copiar</button>
+            </div>
+            <div class="credential">
+                <span>Contraseña: <span id="teacherPass">teacher123</span></span>
+                <button class="copy-btn" onclick="copyToClipboard('teacher123')">Copiar</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let selectedRole = 'student';
+
+        // Manejar selección de rol
+        document.querySelectorAll('.role-btn').forEach(btn => {
+            btn.addEventListener('click', function() {
+                document.querySelectorAll('.role-btn').forEach(b => b.classList.remove('active'));
+                this.classList.add('active');
+                selectedRole = this.dataset.role;
+            });
+        });
+
+        // Manejar envío del formulario
+        document.getElementById('loginForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            const username = document.getElementById('username').value;
+            const password = document.getElementById('password').value;
+            const loginBtn = document.getElementById('loginBtn');
+            
+            // Mostrar estado de carga
+            loginBtn.innerHTML = '<div class="loading"></div> Iniciando sesión...';
+            loginBtn.disabled = true;
+            
+            // Ocultar mensajes anteriores
+            document.getElementById('errorMessage').style.display = 'none';
+            document.getElementById('successMessage').style.display = 'none';
+
+            try {
+                const response = await fetch('/api/auth/login', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ username, password, role: selectedRole })
+                });
+
+                const data = await response.json();
+
+                if (response.ok) {
+                    // Éxito - Guardar datos en localStorage
+                    localStorage.setItem('authToken', data.token);
+                    localStorage.setItem('userRole', data.user.role);
+                    localStorage.setItem('userFirstName', data.user.firstName);
+                    localStorage.setItem('userLastName', data.user.lastName);
+                    
+                    document.getElementById('successMessage').textContent = '✅ Inicio de sesión exitoso. Redirigiendo...';
+                    document.getElementById('successMessage').style.display = 'block';
+                    
+                    // Redirigir según el rol
+                    setTimeout(() => {
+                        if (selectedRole === 'student') {
+                            // Redirigir al dashboard de estudiante
+                            window.location.href = '/student/dashboard';
+                        } else {
+                            window.location.href = '/teacher/dashboard';
+                        }
+                    }, 1200);
+                } else {
+                    // Error
+                    document.getElementById('errorMessage').textContent = '❌ ' + (data.message || 'Credenciales inválidas');
+                    document.getElementById('errorMessage').style.display = 'block';
+                    
+                    // Restablecer botón
+                    loginBtn.innerHTML = 'Iniciar Sesión';
+                    loginBtn.disabled = false;
+                }
+            } catch (error) {
+                document.getElementById('errorMessage').textContent = '❌ Error de conexión: ' + error.message;
+                document.getElementById('errorMessage').style.display = 'block';
+                
+                // Restablecer botón
+                loginBtn.innerHTML = 'Iniciar Sesión';
+                loginBtn.disabled = false;
+            }
+        });
+
+        // Función para copiar al portapapeles
+        function copyToClipboard(text) {
+            navigator.clipboard.writeText(text).then(() => {
+                // Mostrar mensaje temporal
+                const btn = event.target;
+                const originalText = btn.textContent;
+                btn.textContent = '¡Copiado!';
+                setTimeout(() => {
+                    btn.textContent = originalText;
+                }, 1000);
+            });
+        }
+
+        // Auto-completar credenciales según el rol seleccionado
+        document.querySelectorAll('.role-btn').forEach(btn => {
+            btn.addEventListener('click', function() {
+                if (this.dataset.role === 'student') {
+                    document.getElementById('username').value = 'estudiante_prueba';
+                    document.getElementById('password').value = 'student123';
+                } else {
+                    document.getElementById('username').value = 'maestro_prueba';
+                    document.getElementById('password').value = 'teacher123';
+                }
+            });
+        });
+
+        // Cargar credenciales por defecto (estudiante)
+        document.getElementById('username').value = 'estudiante_prueba';
+        document.getElementById('password').value = 'student123';
+    </script>
+    <script>
+        // Registro de nuevos usuarios
+        (function initRegisterUI(){
+            const container = document.querySelector('.login-container');
+            const registerBox = document.createElement('div');
+            registerBox.className = 'demo-credentials';
+            registerBox.innerHTML = `
+                <h3>🆕 Crear Cuenta</h3>
+                <form id="registerForm" style="display: grid; gap: 10px;">
+                    <div class="form-group">
+                        <label>Usuario</label>
+                        <input type="text" id="regUsername" required minlength="3" placeholder="nuevo_usuario">
+                    </div>
+                    <div class="form-group">
+                        <label>Contraseña</label>
+                        <input type="password" id="regPassword" required minlength="6" placeholder="********">
+                    </div>
+                    <div class="role-selector">
+                        <button type="button" class="role-btn active" data-role="student" id="regStudent">Estudiante</button>
+                        <button type="button" class="role-btn" data-role="teacher" id="regTeacher">Profesor</button>
+                    </div>
+                    <div class="form-group">
+                        <label>Nombre</label>
+                        <input type="text" id="regFirstName" placeholder="Nombre">
+                    </div>
+                    <div class="form-group">
+                        <label>Apellido</label>
+                        <input type="text" id="regLastName" placeholder="Apellido">
+                    </div>
+                    <button type="submit" class="login-btn">Crear Cuenta</button>
+                    <div id="registerMsg" class="success-message" style="display:none"></div>
+                    <div id="registerErr" class="error-message" style="display:none"></div>
+                </form>
+            `;
+            container.appendChild(registerBox);
+
+            let regRole = 'student';
+            document.getElementById('regStudent').addEventListener('click',()=>{
+                regRole='student';
+                document.getElementById('regStudent').classList.add('active');
+                document.getElementById('regTeacher').classList.remove('active');
+            });
+            document.getElementById('regTeacher').addEventListener('click',()=>{
+                regRole='teacher';
+                document.getElementById('regTeacher').classList.add('active');
+                document.getElementById('regStudent').classList.remove('active');
+            });
+
+            document.getElementById('registerForm').addEventListener('submit', async (e)=>{
+                e.preventDefault();
+                const username = document.getElementById('regUsername').value;
+                const password = document.getElementById('regPassword').value;
+                const firstName = document.getElementById('regFirstName').value;
+                const lastName = document.getElementById('regLastName').value;
+                const msg = document.getElementById('registerMsg');
+                const err = document.getElementById('registerErr');
+                msg.style.display='none'; err.style.display='none';
+                try {
+                    if (username.length < 3) {
+                        err.textContent = '❌ El usuario debe tener al menos 3 caracteres';
+                        err.style.display = 'block';
+                        return;
+                    }
+                    if (password.length < 6) {
+                        err.textContent = '❌ La contraseña debe tener al menos 6 caracteres';
+                        err.style.display = 'block';
+                        return;
+                    }
+                    const response = await fetch('/api/auth/register', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ username, password, role: regRole, firstName, lastName })
+                    });
+                    const data = await response.json();
+                    if (response.ok && data.success) {
+                        msg.textContent = '✅ Cuenta creada. Iniciando sesión automáticamente...';
+                        msg.style.display = 'block';
+                        // Autologin inmediato tras registro
+                        try {
+                            const loginRes = await fetch('/api/auth/login', {
+                                method: 'POST',
+                                headers: { 'Content-Type': 'application/json' },
+                                body: JSON.stringify({ username, password, role: regRole })
+                            });
+                            const loginData = await loginRes.json();
+                            if (loginRes.ok && loginData.success) {
+                                localStorage.setItem('authToken', loginData.token);
+                                localStorage.setItem('userRole', loginData.user.role);
+                                localStorage.setItem('userFirstName', loginData.user.firstName || '');
+                                localStorage.setItem('userLastName', loginData.user.lastName || '');
+                                // Redirigir según rol
+                                setTimeout(()=>{
+                                    if (regRole === 'student') {
+                                        window.location.href = '/student/dashboard';
+                                    } else {
+                                        window.location.href = '/teacher/dashboard';
+                                    }
+                                }, 500);
+                            } else {
+                                // Fallback: Autocompletar login manual si autologin falla
+                                msg.textContent = '✅ Cuenta creada. Completa el login arriba.';
+                                document.getElementById('username').value = username;
+                                document.getElementById('password').value = password;
+                                selectedRole = regRole;
+                                document.querySelectorAll('.role-btn').forEach(b=>b.classList.remove('active'));
+                                document.querySelector(`.role-btn[data-role="${regRole}"]`).classList.add('active');
+                            }
+                        } catch (e) {
+                            // Fallback: Autocompletar login manual si autologin lanza error
+                            msg.textContent = '✅ Cuenta creada. Completa el login arriba.';
+                            document.getElementById('username').value = username;
+                            document.getElementById('password').value = password;
+                            selectedRole = regRole;
+                            document.querySelectorAll('.role-btn').forEach(b=>b.classList.remove('active'));
+                            document.querySelector(`.role-btn[data-role="${regRole}"]`).classList.add('active');
+                        }
+                    } else {
+                        err.textContent = '❌ ' + (data.message || 'No se pudo crear la cuenta');
+                        err.style.display = 'block';
+                    }
+                } catch (error) {
+                    err.textContent = '❌ Error de conexión: ' + error.message;
+                    err.style.display = 'block';
+                }
+            });
+        })();
+    </script>
+</body>
+</html>

@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>ITSU DSS – Test ILS</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <header>
+    <div class="title">Test ILS – Felder-Silverman</div>
+    <nav>
+      <a href="index.html">Inicio</a>
+      <a href="perfil.html">Perfil</a>
+      <a href="recomendaciones.html">Recomendaciones</a>
+      <button class="btn outline" onclick="ITSU.toggleDark()">Modo oscuro/claro</button>
+    </nav>
+  </header>
+  <div class="container">
+    <div id="ils-root"></div>
+  </div>
+
+  <script src="script.js"></script>
+  <script>
+    ITSU.renderILSForm();
+  </script>
+</body>
+</html>
+

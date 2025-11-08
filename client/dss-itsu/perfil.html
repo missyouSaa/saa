@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>ITSU DSS – Perfil Cognitivo</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <header>
+    <div class="title">Perfil Cognitivo – Felder-Silverman</div>
+    <nav>
+      <a href="index.html">Inicio</a>
+      <a href="test-ils.html">Test ILS</a>
+      <a href="recomendaciones.html">Recomendaciones</a>
+      <button class="btn outline" onclick="ITSU.toggleDark()">Modo oscuro/claro</button>
+    </nav>
+  </header>
+  <div class="container">
+    <div class="grid grid-2">
+      <div class="card">
+        <h3>Tu Perfil Cognitivo</h3>
+        <div id="perfil"></div>
+        <div class="space"></div>
+        <div class="row">
+          <button class="btn" onclick="window.location.href='recomendaciones.html'">Ver recomendaciones</button>
+          <button class="btn outline" onclick="window.print()">Exportar perfil en PDF</button>
+        </div>
+      </div>
+      <div class="card">
+        <h3>Gráfico Radar</h3>
+        <canvas id="radarChart" height="240"></canvas>
+      </div>
+    </div>
+
+    <div class="card">
+      <h3>ECAS: Predecir mi riesgo</h3>
+      <p>Ingresa tus dos notas y tu asistencia para estimar tu riesgo de deserción con IA explicable.</p>
+      <div class="row">
+        <div class="form-group">
+          <label for="nota1">Nota 1 (0-10)</label>
+          <input type="number" id="nota1" min="0" max="10" step="0.1" />
+        </div>
+        <div class="form-group">
+          <label for="nota2">Nota 2 (0-10)</label>
+          <input type="number" id="nota2" min="0" max="10" step="0.1" />
+        </div>
+        <div class="form-group">
+          <label for="asistencia">Asistencia (%)</label>
+          <input type="number" id="asistencia" min="0" max="100" step="1" />
+        </div>
+      </div>
+      <button class="btn" onclick="ECAS.predictFromPerfilInputs()">Predecir Riesgo de Deserción</button>
+      <div id="alerta" class="space"></div>
+    </div>
+  </div>
+
+  <script src="script.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <script>
+    const perfil = JSON.parse(localStorage.getItem('perfil') || 'null');
+    const el = document.getElementById('perfil');
+    if (!perfil) {
+      el.innerHTML = '<p class="muted">No hay resultados aún. Realiza el <a href="test-ils.html">Test ILS</a>.</p>';
+    } else {
+      el.innerHTML = `
+        <p>Activo/Reflexivo: <strong>${perfil.activo_reflexivo}</strong></p>
+        <p>Sensorial/Intuitivo: <strong>${perfil.sensorial_intuitivo}</strong></p>
+        <p>Visual/Verbal: <strong>${perfil.visual_verbal}</strong></p>
+        <p>Secuencial/Global: <strong>${perfil.secuencial_global}</strong></p>
+      `;
+    }
+
+    // Radar chart with scores 0–11
+    const scores = perfil?.scores || { activo: 0, sensorial: 0, visual: 0, secuencial: 0 };
+    const ctx = document.getElementById('radarChart');
+    if (ctx) {
+      new Chart(ctx, {
+        type: 'radar',
+        data: {
+          labels: ['Activo', 'Sensorial', 'Visual', 'Secuencial'],
+          datasets: [{
+            label: 'Resultados ILS',
+            data: [scores.activo, scores.sensorial, scores.visual, scores.secuencial],
+            backgroundColor: 'rgba(14,165,233,0.2)',
+            borderColor: '#0ea5e9',
+            pointBackgroundColor: '#0ea5e9'
+          }]
+        },
+        options: {
+          scales: { r: { beginAtZero: true, suggestedMax: 11 } },
+          plugins: { legend: { display: true } }
+        }
+      });
+    }
+  </script>
+</body>
+</html>

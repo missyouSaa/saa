@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>ITSU DSS – Panel Docente</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <header>
+    <div class="title">Panel del Docente</div>
+    <nav>
+      <a href="index.html">Inicio</a>
+      <a href="test-ils.html">Test ILS</a>
+      <a href="perfil.html">Perfil</a>
+      <a href="recomendaciones.html">Recomendaciones</a>
+      <button class="btn outline" onclick="ITSU.toggleDark()">Modo oscuro/claro</button>
+    </nav>
+  </header>
+  <div class="container">
+    <div class="grid grid-2">
+      <div class="card">
+        <h3>ECAS: Riesgo de Deserción por Estudiante</h3>
+        <table>
+          <thead>
+            <tr>
+              <th>Nombre</th>
+              <th>Paralelo</th>
+              <th>Nota1</th>
+              <th>Nota2</th>
+              <th>Asis%</th>
+              <th>Riesgo</th>
+              <th>Acción</th>
+            </tr>
+          </thead>
+          <tbody id="tbody"></tbody>
+        </table>
+      </div>
+      <div class="card">
+        <h3>Explicación (SHAP simple)</h3>
+        <p class="muted">Selecciona "Ver explicación" para un estudiante.</p>
+        <canvas id="shapChart" height="240"></canvas>
+        <div id="clusters" class="muted">Calculando clusters...</div>
+      </div>
+    </div>
+  </div>
+
+  <script src="script.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <script>
+    let shapChart = null;
+
+    async function loadData() {
+      try {
+        const resp = await fetch('data/encuesta.json');
+        const data = await resp.json();
+        const tbody = document.getElementById('tbody');
+        const rows = await Promise.all(data.map(async d => {
+          const res = await ECAS.predict({
+            visual: d.scores.visual,
+            activo: d.scores.activo,
+            nota1: d.nota1,
+            nota2: d.nota2,
+            asistencia: d.asistencia
+          });
+          const riskStr = `${(res.prob*100).toFixed(1)}% (${res.level})`;
+          return `
+            <tr>
+              <td>${d.nombre}</td>
+              <td>${d.paralelo}</td>
+              <td>${d.nota1.toFixed(1)}</td>
+              <td>${d.nota2.toFixed(1)}</td>
+              <td>${d.asistencia}</td>
+              <td><span style="color:${res.color}"><strong>${riskStr}</strong></span></td>
+              <td>
+                <button class="btn outline" onclick='verExplicacion(${JSON.stringify(res.explanation).replace(/"/g,"&quot;")})'>Ver explicación</button>
+                <button class="btn" onclick='enviarPlan(${JSON.stringify({nombre:d.nombre,accion:res.accion}).replace(/"/g,"&quot;")})'>Enviar plan de rescate</button>
+              </td>
+            </tr>
+          `;
+        }));
+        tbody.innerHTML = rows.join('');
+
+        const res = await ITSU.clusterEstudiantes(4);
+        const div = document.getElementById('clusters');
+        if (!res) {
+          div.textContent = 'No hay suficientes datos para clusterizar.';
+        } else {
+          const counts = Array.from({ length: res.centroids.length }, () => 0);
+          res.labels.forEach(l => counts[l]++);
+          div.innerHTML = counts.map((c, i) => `<p>Cluster ${i+1}: ${c} estudiantes</p>`).join('');
+        }
+      } catch (e) {
+        document.getElementById('clusters').textContent = 'Error al cargar datos.';
+      }
+    }
+
+    function verExplicacion(explanation) {
+      const labels = explanation.map(e => e.feature);
+      const contribs = explanation.map(e => e.contribution);
+      const ctx = document.getElementById('shapChart');
+      if (!ctx) return;
+      if (shapChart) shapChart.destroy();
+      shapChart = new Chart(ctx, {
+        type: 'bar',
+        data: {
+          labels,
+          datasets: [{
+            label: 'Contribuciones (peso*valor)',
+            data: contribs,
+            backgroundColor: contribs.map(c => c >= 0 ? 'rgba(239,68,68,0.6)' : 'rgba(16,185,129,0.6)')
+          }]
+        },
+        options: {
+          plugins: { legend: { display: false } },
+          scales: { y: { beginAtZero: true } }
+        }
+      });
+    }
+
+    function enviarPlan(info) {
+      alert(`Se envió plan de rescate para ${info.nombre}: ${info.accion}`);
+    }
+
+    loadData();
+  </script>
+</body>
+</html>

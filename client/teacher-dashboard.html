@@ -1,0 +1,508 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard - Profesor</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #ff9a56 0%, #ff6b6b 100%);
+            min-height: 100vh;
+            color: #333;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .header {
+            background: white;
+            border-radius: 15px;
+            padding: 20px;
+            margin-bottom: 20px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .header h1 {
+            color: #ff6b6b;
+            font-size: 2rem;
+        }
+
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .logout-btn {
+            background: #dc3545;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 25px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: background 0.3s;
+        }
+
+        .logout-btn:hover {
+            background: #c82333;
+        }
+
+        .dashboard-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .metric-card {
+            background: white;
+            border-radius: 15px;
+            padding: 25px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            text-align: center;
+            transition: transform 0.3s;
+        }
+
+        .metric-card:hover {
+            transform: translateY(-5px);
+        }
+
+        .metric-icon {
+            font-size: 3rem;
+            margin-bottom: 15px;
+        }
+
+        .metric-value {
+            font-size: 2.5rem;
+            font-weight: bold;
+            color: #ff6b6b;
+            margin-bottom: 10px;
+        }
+
+        .metric-label {
+            color: #666;
+            font-size: 1.1rem;
+        }
+
+        .students-section {
+            background: white;
+            border-radius: 15px;
+            padding: 25px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            margin-bottom: 20px;
+        }
+
+        .section-title {
+            color: #ff6b6b;
+            font-size: 1.5rem;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+
+        .students-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 15px;
+        }
+
+        .students-table th,
+        .students-table td {
+            padding: 12px;
+            text-align: left;
+            border-bottom: 1px solid #eee;
+        }
+
+        .students-table th {
+            background: #f8f9fa;
+            color: #ff6b6b;
+            font-weight: bold;
+        }
+
+        .students-table tr:hover {
+            background: #f8f9fa;
+        }
+
+        .progress-bar {
+            background: #f0f0f0;
+            border-radius: 10px;
+            height: 20px;
+            overflow: hidden;
+            margin: 5px 0;
+        }
+
+        .progress-fill {
+            background: linear-gradient(90deg, #ff9a56, #ff6b6b);
+            height: 100%;
+            transition: width 0.3s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+            font-size: 0.8rem;
+        }
+
+        .loading {
+            text-align: center;
+            padding: 20px;
+            color: white;
+            font-size: 1.2rem;
+        }
+
+        .error {
+            background: #dc3545;
+            color: white;
+            padding: 15px;
+            border-radius: 10px;
+            margin: 20px 0;
+            text-align: center;
+        }
+
+        .welcome-message {
+            background: white;
+            border-radius: 15px;
+            padding: 25px;
+            margin-bottom: 20px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            text-align: center;
+        }
+
+        .welcome-message h2 {
+            color: #ff6b6b;
+            margin-bottom: 10px;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .chart-container {
+            background: white;
+            border-radius: 15px;
+            padding: 25px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            margin-bottom: 20px;
+        }
+
+        .btn {
+            background: #ff6b6b;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 25px;
+            cursor: pointer;
+            font-weight: bold;
+            text-decoration: none;
+            display: inline-block;
+            transition: background 0.3s;
+        }
+
+        .btn:hover {
+            background: #ff5252;
+        }
+
+        .grade-badge {
+            padding: 5px 10px;
+            border-radius: 15px;
+            font-weight: bold;
+            font-size: 0.9rem;
+        }
+
+        .grade-excellent { background: #d4edda; color: #155724; }
+        .grade-good { background: #d1ecf1; color: #0c5460; }
+        .grade-average { background: #fff3cd; color: #856404; }
+        .grade-poor { background: #f8d7da; color: #721c24; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div style="background:#fff3cd;border:1px solid #ffeeba;color:#856404;border-radius:10px;padding:12px 16px;margin:16px 0;text-align:left;">
+            <strong>Nuevo:</strong> Accede al <a href="/dss-itsu/docente.html" style="color:#2b6cb0;text-decoration:underline;">Panel Docente ECAS</a> con riesgo de deserción y acciones.
+        </div>
+        <div id="loading" class="loading">Cargando dashboard del profesor...</div>
+        <div id="error" class="error" style="display: none;"></div>
+        <div id="dashboard" style="display: none;">
+            <div class="header">
+                <h1>👨‍🏫 Dashboard Profesor</h1>
+                <div class="user-info">
+                    <span id="user-name"></span>
+                    <button class="logout-btn" onclick="logout()">Cerrar Sesión</button>
+                </div>
+            </div>
+
+            <div class="welcome-message">
+                <h2>¡Bienvenido Profesor!</h2>
+                <p>Aquí puedes monitorear el progreso de tus estudiantes y ver las métricas del curso.</p>
+            </div>
+
+            <div class="dashboard-grid">
+                <div class="metric-card">
+                    <div class="metric-icon">👥</div>
+                    <div class="metric-value" id="total-students">0</div>
+                    <div class="metric-label">Total Estudiantes</div>
+                </div>
+
+                <div class="metric-card">
+                    <div class="metric-icon">📊</div>
+                    <div class="metric-value" id="average-grade">0.0</div>
+                    <div class="metric-label">Promedio General</div>
+                </div>
+
+                <div class="metric-card">
+                    <div class="metric-icon">✅</div>
+                    <div class="metric-value" id="completion-rate">0%</div>
+                    <div class="metric-label">Tasa de Completitud</div>
+                </div>
+
+                <div class="metric-card">
+                    <div class="metric-icon">📝</div>
+                    <div class="metric-value" id="surveys-completed">0</div>
+                    <div class="metric-label">Encuestas Completadas</div>
+                </div>
+            </div>
+
+            <div class="chart-container">
+                <h3 class="section-title">📈 Distribución de Calificaciones</h3>
+                <div id="grades-distribution">
+                    <div class="stats-grid">
+                        <div class="metric-card">
+                            <div class="metric-value" id="excellent-count">0</div>
+                            <div class="metric-label">Excelente (9-10)</div>
+                        </div>
+                        <div class="metric-card">
+                            <div class="metric-value" id="good-count">0</div>
+                            <div class="metric-label">Bueno (8-8.9)</div>
+                        </div>
+                        <div class="metric-card">
+                            <div class="metric-value" id="average-count">0</div>
+                            <div class="metric-label">Regular (6-7.9)</div>
+                        </div>
+                        <div class="metric-card">
+                            <div class="metric-value" id="poor-count">0</div>
+                            <div class="metric-label">Necesita Mejorar (0-5.9)</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="students-section">
+                <h3 class="section-title">👨‍🎓 Lista de Estudiantes</h3>
+                <div style="overflow-x: auto;">
+                    <table class="students-table">
+                        <thead>
+                            <tr>
+                                <th>Nombre</th>
+                                <th>ID Estudiante</th>
+                                <th>Carrera</th>
+                                <th>Semestre</th>
+                                <th>Promedio</th>
+                                <th>Progreso Encuestas</th>
+                                <th>Estado</th>
+                            </tr>
+                        </thead>
+                        <tbody id="students-tbody">
+                            <tr>
+                                <td colspan="7" style="text-align: center; padding: 20px;">Cargando estudiantes...</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let currentUser = null;
+        let students = [];
+
+        async function loadDashboard() {
+            try {
+                // Obtener token del almacenamiento local
+                const token = localStorage.getItem('authToken');
+                const userRole = localStorage.getItem('userRole');
+                
+                if (!token || userRole !== 'teacher') {
+                    window.location.href = '/login.html';
+                    return;
+                }
+
+                // Configurar usuario actual desde localStorage
+                currentUser = {
+                    firstName: localStorage.getItem('userFirstName') || 'Maestro',
+                    lastName: localStorage.getItem('userLastName') || '',
+                    role: userRole
+                };
+
+                // Cargar métricas del profesor
+                await loadTeacherMetrics();
+                
+                // Cargar lista de estudiantes
+                await loadStudents();
+
+                document.getElementById('loading').style.display = 'none';
+                document.getElementById('dashboard').style.display = 'block';
+
+            } catch (error) {
+                console.error('Error:', error);
+                document.getElementById('error').textContent = 'Error al cargar el dashboard: ' + error.message;
+                document.getElementById('error').style.display = 'block';
+                document.getElementById('loading').style.display = 'none';
+            }
+        }
+
+        async function loadTeacherMetrics() {
+            try {
+                const token = localStorage.getItem('authToken');
+                const response = await fetch('/api/teacher/metrics', {
+                    headers: {
+                        'Authorization': `Bearer ${token}`
+                    }
+                });
+
+                if (response.ok) {
+                    const metricsData = await response.json();
+                    if (metricsData.success) {
+                        updateMetrics(metricsData.data);
+                    }
+                }
+            } catch (error) {
+                console.error('Error al cargar métricas:', error);
+            }
+        }
+
+        function updateMetrics(metrics) {
+            document.getElementById('total-students').textContent = metrics.totalStudents;
+            document.getElementById('average-grade').textContent = metrics.averageGrade.toFixed(1);
+            document.getElementById('completion-rate').textContent = metrics.completionRate.toFixed(1) + '%';
+            document.getElementById('surveys-completed').textContent = metrics.surveysCompleted;
+
+            // Actualizar información del usuario
+            document.getElementById('user-name').textContent = 
+                `${currentUser.firstName} ${currentUser.lastName}`;
+        }
+
+        async function loadStudents() {
+            try {
+                const token = localStorage.getItem('authToken');
+                const response = await fetch('/api/teacher/students', {
+                    headers: {
+                        'Authorization': `Bearer ${token}`
+                    }
+                });
+
+                if (response.ok) {
+                    const studentsData = await response.json();
+                    if (studentsData.success) {
+                        students = studentsData.data;
+                        displayStudents(students);
+                        updateGradeDistribution(students);
+                    }
+                }
+            } catch (error) {
+                console.error('Error al cargar estudiantes:', error);
+            }
+        }
+
+        function displayStudents(students) {
+            const tbody = document.getElementById('students-tbody');
+            
+            if (students.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="7" style="text-align: center; padding: 20px;">No hay estudiantes registrados.</td></tr>';
+                return;
+            }
+
+            tbody.innerHTML = students.map(student => {
+                const grade = parseFloat(student.average || '0');
+                const completionRate = parseFloat(student.completionRate || '0');
+                const gradeClass = getGradeClass(grade);
+                
+                return `
+                    <tr>
+                        <td><strong>${student.name}</strong></td>
+                        <td>${student.studentId}</td>
+                        <td>${student.career}</td>
+                        <td>${student.semester}</td>
+                        <td><span class="grade-badge ${gradeClass}">${grade.toFixed(1)}</span></td>
+                        <td>
+                            <div class="progress-bar">
+                                <div class="progress-fill" style="width: ${completionRate}%">
+                                    ${completionRate.toFixed(0)}%
+                                </div>
+                            </div>
+                        </td>
+                        <td>
+                            ${completionRate >= 100 ? 
+                                '<span style="color: #28a745; font-weight: bold;">✅ Completo</span>' : 
+                                '<span style="color: #ffc107; font-weight: bold;">📝 En Progreso</span>'
+                            }
+                        </td>
+                    </tr>
+                `;
+            }).join('');
+        }
+
+        function getGradeClass(grade) {
+            if (grade >= 9) return 'grade-excellent';
+            if (grade >= 8) return 'grade-good';
+            if (grade >= 6) return 'grade-average';
+            return 'grade-poor';
+        }
+
+        function updateGradeDistribution(students) {
+            const grades = {
+                excellent: 0, // 9-10
+                good: 0,      // 8-8.9
+                average: 0,   // 6-7.9
+                poor: 0       // 0-5.9
+            };
+
+            students.forEach(student => {
+                const grade = parseFloat(student.average || '0');
+                if (grade >= 9) grades.excellent++;
+                else if (grade >= 8) grades.good++;
+                else if (grade >= 6) grades.average++;
+                else grades.poor++;
+            });
+
+            document.getElementById('excellent-count').textContent = grades.excellent;
+            document.getElementById('good-count').textContent = grades.good;
+            document.getElementById('average-count').textContent = grades.average;
+            document.getElementById('poor-count').textContent = grades.poor;
+        }
+
+        async function logout() {
+            try {
+                // Limpiar datos del almacenamiento local
+                localStorage.removeItem('authToken');
+                localStorage.removeItem('userRole');
+                localStorage.removeItem('userFirstName');
+                localStorage.removeItem('userLastName');
+                window.location.href = '/login.html';
+            } catch (error) {
+                console.error('Error al cerrar sesión:', error);
+                window.location.href = '/login.html';
+            }
+        }
+
+        // Cargar dashboard al iniciar
+        loadDashboard();
+    </script>
+</body>
+</html>
