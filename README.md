@@ -114,3 +114,42 @@ saa/
 
 - Cliente estático listo para Pages.
 - Backend listo para desplegar (Render/Railway) o ejecutar localmente.
+
+## 🌐 Acceso desde otra computadora en la misma red (LAN)
+
+Sigue estos pasos para que otro equipo en tu misma red Wi‑Fi acceda al proyecto:
+
+1) Obtén tu IP local del equipo que ejecutará el servidor
+- Windows: abre PowerShell y ejecuta `ipconfig`. Anota el `IPv4 Address` (ej. `192.168.1.25`).
+- macOS/Linux: ejecuta `ip a` o `ifconfig` y anota la IP (ej. `192.168.0.12`).
+
+2) Arranca el servidor en ese equipo
+- Windows (PowerShell):
+  - `& 'C:\Program Files\nodejs\node.exe' basic-server.cjs` (o con puerto específico: `$env:PORT=3006; node basic-server.cjs`)
+- macOS/Linux:
+  - `PORT=3006 node basic-server.cjs`
+- El servidor escucha en todas las interfaces, por lo tanto será accesible vía IP LAN.
+
+3) Permite el acceso en el firewall (Windows)
+- Cuando Windows pregunte “Permitir acceso” para Node.js, acepta en redes privadas.
+- Si no aparece el aviso, ve a “Firewall de Windows → Permitir una app” y habilita Node.js en redes privadas.
+
+4) Abre desde otro ordenador en la misma red
+- En el navegador del segundo equipo, abre `http://<IP_DEL_SERVIDOR>:3006/login.html`.
+- Ejemplo: `http://192.168.1.25:3006/login.html`.
+
+5) GitHub Pages con backend en LAN (opcional)
+- Si usas Pages para servir el cliente, apunta la API al servidor LAN con:
+  - `https://<tu-usuario>.github.io/<repo>/?api=http://<IP_DEL_SERVIDOR>:3006`
+- El cliente detectará `API_BASE` vía `?api=` y funcionará con tu servidor local.
+
+6) Problemas comunes
+- “Connection refused”: el backend no está corriendo o el puerto/Firewall bloquea la entrada.
+- “Timeout”: equipos en redes distintas (aislamiento AP) o perfil de red “Pública” bloquea acceso.
+- Solución: comprueba IP correcta, que el puerto sea el mismo, y que el firewall permita Node.js.
+
+7) Nota sobre encuestas
+- La página de encuestas fue deshabilitada:
+  - `index.html` redirige al login.
+  - `survey.html` muestra un aviso y redirige al dashboard.
+  - Los dashboards ya no enlazan a la encuesta.

@@ -246,9 +246,9 @@
             </button>
         </form>
 
-        <div class="demo-credentials">
-            <h3>🎯 Credenciales de Demostración</h3>
-            <div class="credential">
+        <details class="demo-credentials">
+            <summary style="cursor:pointer;font-weight:600">🎯 Credenciales de Demostración</summary>
+            <div style="margin-top:12px" class="credential">
                 <span>Estudiante: <span id="studentUser">estudiante_prueba</span></span>
                 <button class="copy-btn" onclick="copyToClipboard('estudiante_prueba')">Copiar</button>
             </div>
@@ -264,7 +264,7 @@
                 <span>Contraseña: <span id="teacherPass">teacher123</span></span>
                 <button class="copy-btn" onclick="copyToClipboard('teacher123')">Copiar</button>
             </div>
-        </div>
+        </details>
     </div>
 
     <script>
@@ -396,11 +396,11 @@
         // Registro de nuevos usuarios
         (function initRegisterUI(){
             const container = document.querySelector('.login-container');
-            const registerBox = document.createElement('div');
+            const registerBox = document.createElement('details');
             registerBox.className = 'demo-credentials';
             registerBox.innerHTML = `
-                <h3>🆕 Crear Cuenta</h3>
-                <form id="registerForm" style="display: grid; gap: 10px;">
+                <summary style="cursor:pointer;font-weight:600">🆕 Crear Cuenta</summary>
+                <form id="registerForm" style="display: grid; gap: 10px; margin-top:12px;">
                     <div class="form-group">
                         <label>Usuario</label>
                         <input type="text" id="regUsername" required minlength="3" placeholder="nuevo_usuario">
